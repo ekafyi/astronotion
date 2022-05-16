@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "noEmit": false,
+    "outDir": "dist"
+  },
+  "include": ["src/api"],
+  "exclude": ["**/*.test.ts"]
+}

@@ -1,0 +1,35 @@
+---
+import NotionGroupedColumn from "./NotionGroupedColumn.astro";
+import NotionGroupedList from "./NotionGroupedList.astro";
+import type { AnGroupBlock } from "../api/lib";
+import type { ColumnListBlock, ColumnBlock, BulletedListBlock, NumberedListBlock, TodoBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: AnGroupBlock;
+}
+
+const { data } = Astro.props as Props;
+
+let columnItems;
+let listItems;
+
+if (data.type) {
+	if (["column", "column_list"].includes(data.type)) {
+		columnItems = data.items as (ColumnListBlock | ColumnBlock)[];
+	} else if (["bulleted_list", "numbered_list", "to_do"].includes(data.type)) {
+		listItems = data.items as BulletedListBlock[] | NumberedListBlock[] | TodoBlock[];
+	}
+}
+---
+
+<Fragment>
+	{(columnItems || listItems) && (
+		<Fragment>
+			{columnItems ? (
+				<NotionGroupedColumn data={columnItems} />
+			) : (
+				<NotionGroupedList data={listItems || []} />
+			)}
+		</Fragment>
+	)}
+</Fragment>

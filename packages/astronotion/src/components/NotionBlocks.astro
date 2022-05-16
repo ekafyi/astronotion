@@ -1,0 +1,19 @@
+---
+import NotionBlockWrapper from "./NotionBlockWrapper.astro";
+import { groupListBlocks } from "../api/lib";
+import type { AnContentBlock } from "../api/lib";
+
+export interface Props {
+	data: AnContentBlock[];
+}
+
+const { data = [] } = Astro.props as Props;
+
+const groupedBlocks = groupListBlocks(data);
+---
+
+<Fragment>
+	{groupedBlocks.map(item => (
+		<NotionBlockWrapper data={item} />
+	))}
+</Fragment>

@@ -1,0 +1,111 @@
+---
+// @ts-ignore
+import XElement from "astro-xelement";
+import type { AnContentBlock, AnGroupBlock } from "../api/lib";
+
+import NotionBlockItemBookmark from "./NotionBlockItemBookmark.astro";
+import NotionBlockItemCallout from "./NotionBlockItemCallout.astro";
+import NotionBlockItemCode from "./NotionBlockItemCode.astro";
+import NotionBlockItemEmbed from "./NotionBlockItemEmbed.astro";
+import NotionBlockItemImage from "./NotionBlockItemImage.astro";
+import NotionGroupWrapper from "./NotionGroupWrapper.astro";
+import NotionTexts from "./NotionTexts.astro";
+
+export interface Props {
+	data: AnContentBlock | AnGroupBlock;
+}
+
+const { data } = Astro.props as Props;
+
+let BlockElement = XElement.div;
+let ariaHidden = false;
+let skipChildComponent = false;
+let isFallback = false;
+let bemClass = "";
+
+if (!("items" in data)) {
+	switch (data.type) {
+		case "bookmark":
+			bemClass = "an-block-bookmark";
+			break;
+		case "callout":
+			bemClass = "an-block-callout";
+			break;
+		case "code":
+			bemClass = "an-block-code";
+			break;
+		case "divider":
+			BlockElement = XElement.hr;
+			skipChildComponent = true;
+			break;
+		case "image":
+			BlockElement = XElement.Fragment;
+			break;
+		case "text":
+			BlockElement = XElement.p;
+			// Empty text block, usually for spacing in original Notion UI.
+			if (!data.properties?.title) {
+				ariaHidden = true;
+				skipChildComponent = true;
+			}
+			break;
+		case "quote":
+			BlockElement = XElement.blockquote;
+			break;
+		case "video": 
+			break;
+		case "header":
+			BlockElement = XElement.h2;
+			break;
+		case "sub_header":
+			BlockElement = XElement.h3;
+			break;
+		case "sub_sub_header":
+			BlockElement = XElement.h4;
+			break;
+		// unsupported blocks
+		default:
+			isFallback = true;
+			skipChildComponent = true;
+			break;
+	}
+}
+
+---
+
+<BlockElement class={bemClass || undefined} aria-hidden={ariaHidden} data-notion-block-type={data.type} data-notion-block-color={data.format?.block_color ?? undefined}>
+	{!skipChildComponent ? (
+		<Fragment>
+			{data.type === "bookmark" && (
+				<NotionBlockItemBookmark bemClass={bemClass} data={{ properties: data.properties, format: data.format}} />
+			)}
+			{data.type === "callout" && (
+				<NotionBlockItemCallout bemClass={bemClass} data={{ properties: data.properties, format: data.format}} />
+			)}
+			{data.type === "code"  && (
+				<NotionBlockItemCode bemClass={bemClass} data={data.properties} />
+			)}
+			{data.type === "image"  && (
+				<NotionBlockItemImage data={data} />
+			)}
+			{(data.type === "text" || data.type === "quote" || data.type === "header" || data.type === "sub_header" || data.type === "sub_sub_header") && (
+				<NotionTexts data={data.properties?.title} />
+			)}
+			{data.type === "video" && (
+				<NotionBlockItemEmbed data={{ properties: data.properties, format: data.format}} />
+			)}
+			{"items" in data && (
+				<NotionGroupWrapper data={data} />
+			)}
+		</Fragment>
+	) : (
+		<Fragment>
+			{/**
+				// Leave for development
+				isFallback && (
+					<div class="break-words">{JSON.stringify(data)}</div>
+				)
+			 */}
+		</Fragment>
+	)}
+</BlockElement>

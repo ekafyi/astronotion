@@ -1,0 +1,26 @@
+export type {
+	Block,
+	BlockMap,
+	Collection,
+	Decoration,
+	ExtendedRecordMap,
+	PageBlock,
+	// Supported content blocks
+	// Make sure these match filter-blocks
+	TextBlock,
+	BulletedListBlock,
+	NumberedListBlock,
+	HeaderBlock,
+	SubHeaderBlock,
+	SubSubHeaderBlock,
+	TodoBlock,
+	DividerBlock,
+	ColumnListBlock,
+	ColumnBlock,
+	QuoteBlock,
+	CodeBlock,
+	ImageBlock,
+	VideoBlock,
+	BookmarkBlock,
+	CalloutBlock,
+} from "notion-types";

@@ -1,0 +1,14 @@
+---
+// temporary no-op
+// currently column items are rendered as regular blocks
+
+import type { ColumnListBlock, ColumnBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: (ColumnListBlock | ColumnBlock)[];
+}
+
+const { data } = Astro.props as Props;
+---
+
+<Fragment />

@@ -1,0 +1,37 @@
+---
+import { Code } from 'astro/components';
+import type { CodeBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: CodeBlock["properties"];
+	bemClass: string;
+}
+
+const { data, bemClass } = Astro.props as Props;
+
+const getLangText = (langData: CodeBlock["properties"]["language"]) => {
+	return langData[0][0];
+}
+
+const getLangCodeProp = (langData: CodeBlock["properties"]["language"]) => {
+	const langContent = getLangText(langData);
+	if (!langContent) return;
+
+	switch (langContent.toUpperCase()) {
+		case "JAVASCRIPT":
+			return "js";
+		default:
+			return langContent as Parameters<typeof Code>[0]["lang"];
+	}
+}
+
+const langText = getLangText(data.language);
+const langProp = getLangCodeProp(data.language);
+---
+
+<Fragment>
+	{langText && (
+		<div class={`${bemClass}__lang`}>{langText}</div>
+	)}
+	<Code code={data.title[0][0]} lang={langProp} />
+</Fragment>

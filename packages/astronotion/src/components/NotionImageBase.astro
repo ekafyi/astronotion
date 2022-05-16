@@ -1,0 +1,93 @@
+---
+import { promises as fs } from 'node:fs';
+import { join } from "path";
+import { Picture } from "astro-imagetools/components";
+import NotionBlockItemText from "./NotionBlockItemText.astro";
+import { getFilename, checkShouldDownloadImage, customizeImageUrl, AN_IMAGES_DIR } from "../api/lib";
+import type { renderPicture } from "astro-imagetools/api";
+import type { Decoration } from "../api/lib/notion-types";
+
+export interface Props {
+	src: string;
+	caption?: Decoration[];
+	pictureProps?: Omit<Parameters<typeof renderPicture>[0], "src">;
+
+	// Custom UI props	
+	isCover?: boolean;
+	containerMaxWidth?: string;
+	cols?: number; // Not implemented yet
+}
+
+const {
+	src: originalSrc,
+	caption,
+	pictureProps = {},
+	isCover = false,
+	containerMaxWidth = "896px",
+	cols = 1,
+} = Astro.props as Props;
+
+const bemCss = "an-block-image";
+
+const checkOrMakeDir = async (dir: string) => {
+	try {
+		await fs.mkdir(dir, { recursive: true });
+		return dir;
+	} catch (error) {
+		return; // Not thrown if dir exists, only for other/unknown errors.
+	}
+}
+
+const checkFileExists = async (path: string) => !!(await fs.stat(path).catch(e => false));
+
+const downloadImage = async (url: string, destDir: string) => {
+	const dir = await checkOrMakeDir(destDir);
+	if (!dir) return; // Don't proceed in case of unknown error.
+
+	const filename = getFilename(url, true);
+	const filePath = join(dir, filename);
+
+	if (!(await checkFileExists(filePath))) {
+		try {
+			const file = await fetch(url);
+			const data = await file.arrayBuffer();
+			await fs.writeFile(filePath, Buffer.from(data));
+		} catch (error) {
+			console.error(error);
+			return;
+		}
+	}
+	// Dir name for fetching MUST NOT have leading slash; for rendering with astro-imagetools MUST have leading slash.
+	return filePath.replace("public", "/public");
+};
+
+const src = checkShouldDownloadImage(originalSrc) ? await downloadImage(originalSrc, AN_IMAGES_DIR) : originalSrc;
+
+const fallbackSizes = isCover ? undefined : `(min-width: 1280px) ${containerMaxWidth}), 100vw`;
+const fallbackBreakpoints = isCover ? [640, 768, 1024, 1280, 1536] : [640, 768, 1024];
+const fallbackFormat = ["webp"] as Parameters<typeof renderPicture>[0]["format"];
+
+const fullPictureProps = {
+	src,
+	// Workaround astro-imagetools does not accept alt="" — github.com/RafidMuhymin/astro-imagetools/issues/42
+	alt: src, 
+	// Define fallback values; will be overridden by pictureProps value if it exists.
+	sizes: fallbackSizes,
+	breakpoints: fallbackBreakpoints,
+	format: fallbackFormat,
+	// Spread the props last.
+	...pictureProps,
+}
+---
+
+<figure class={`${bemCss} ${isCover ? `${bemCss}--cover` : ""} not-prose`}>
+	{src && (
+		// @ts-ignore
+		<Picture {...fullPictureProps} />
+	)}
+	{caption?.length && (
+		<figcaption class={`${bemCss}__caption`}>
+			{caption.map(item => (<NotionBlockItemText data={item} />))}
+		</figcaption>
+	)}
+</figure>

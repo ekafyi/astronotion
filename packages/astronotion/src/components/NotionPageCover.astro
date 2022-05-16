@@ -1,0 +1,16 @@
+---
+import NotionImage from "./NotionImageBase.astro";
+import type { renderPicture } from "astro-imagetools/api";
+
+export interface Props {
+	src: string;
+	pictureProps?: Partial<Omit<Parameters<typeof renderPicture>[0], "src">>;
+}
+
+const { src, pictureProps } = Astro.props as Props;
+
+// !! (later) enable custom alt text from Notion props, add "caption" prop
+---
+
+<!-- // prettier-ignore -->
+<NotionImage src={src} pictureProps={pictureProps} isCover={true} />

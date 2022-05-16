@@ -1,0 +1,39 @@
+---
+import type { BookmarkBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: {
+		properties: BookmarkBlock["properties"];
+		format: BookmarkBlock["format"];
+	}
+	bemClass: string;
+}
+
+const { data, bemClass } = Astro.props as Props;
+
+const { link, title, description } = data.properties;
+const { bookmark_icon, bookmark_cover } = data.format;
+
+const url = link[0][0];
+const urlNoProtocol = url.split("//")[1];
+---
+
+<div class={`${bemClass}__text-wrapper`}>
+	<a class={`${bemClass}__anchor`} href={url} aria-label={title[0][0]}>
+		<div class={`${bemClass}__anchor__url`}>
+			{bookmark_icon && (
+				<img class={`${bemClass}__icon`} src={bookmark_icon} alt="" loading="lazy" width={16} height={16} />
+			)}
+			{urlNoProtocol}
+		</div>
+		<strong class={`${bemClass}__anchor__title`}>
+			{title[0][0]}
+		</strong>
+	</a>
+	<p class={`${bemClass}__description`}>
+		{description[0][0]}
+	</p>
+</div>
+{bookmark_cover && (
+	<img class={`${bemClass}__image`} src={bookmark_cover} alt="" loading="lazy" width={200} height={200} />
+)}

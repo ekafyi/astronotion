@@ -1,0 +1,23 @@
+---
+import NotionBlockItemText from "./NotionBlockItemText.astro";
+import type { CalloutBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: {
+		properties: CalloutBlock["properties"];
+		format: CalloutBlock["format"];
+	};
+	bemClass: string;
+}
+
+const { data, bemClass } = Astro.props as Props;
+---
+
+<span class={`${bemClass}__icon`}>
+	{data.format.page_icon}
+</span>
+<div class={`${bemClass}__text`}>
+	{data.properties?.title?.map((textItem) => (
+		<NotionBlockItemText data={textItem} />
+	))}
+</div>

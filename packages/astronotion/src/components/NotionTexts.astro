@@ -1,0 +1,16 @@
+---
+import type { TextBlock } from "../api/lib/notion-types";
+import NotionBlockItemText from "./NotionBlockItemText.astro";
+
+export interface Props {
+	data: TextBlock["properties"]["title"];
+}
+
+const { data = [] } = Astro.props as Props;
+---
+
+<Fragment>
+	{data.map((textItem) => (
+		<NotionBlockItemText data={textItem} />
+	))}
+</Fragment>

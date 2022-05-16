@@ -1,0 +1,42 @@
+---
+// @ts-ignore
+import XElement from "astro-xelement";
+import type { Decoration } from "../api/lib/notion-types";
+
+export interface Props {
+	data: Decoration; // TextBlock["properties"]["title"][number]
+}
+
+const { data } = Astro.props as Props;
+
+let TextElement = XElement.Fragment;
+if (data[1]?.length) {
+	// Currently not handling multiple formatting (eg. bold and italic).
+	// Using the first markup decorator in the array.
+	const markup = data[1][0][0];
+	switch (markup) {
+		case "b":
+			TextElement = XElement.strong;
+			break;
+		case "i":
+			TextElement = XElement.em;
+			break;
+		case "s":
+			TextElement = XElement.del;
+			break;
+		case "c":
+			TextElement = XElement.code;
+			break;
+		case "u":
+			TextElement = XElement.u;
+			break;
+		default:
+			console.warn(`Unhandled text markup ${markup}, rendered as plaintext`);
+			break;
+	}
+}
+---
+
+<TextElement>
+	{data[0]}
+</TextElement>

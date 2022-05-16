@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "./apps/demo-ssg"
+		},
+		{
+			"path": "./apps/my-astro-site"
+		},
+		{
+			"path": "./packages/astronotion"
+		},
+		{
+			"path": "./packages/component-template"
+		}
+	]
+}

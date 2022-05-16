@@ -1,0 +1,40 @@
+---
+import { YouTube } from "astro-embed";
+import type { VideoBlock } from "../api/lib/notion-types";
+
+export interface Props {
+	data: {
+		properties: VideoBlock["properties"];
+		format:  VideoBlock["format"];
+	}
+}
+
+const { data } = Astro.props as Props;
+const { properties, format } = data;
+
+const sourceUrl = properties.source[0][0];
+const caption = properties.caption ? properties.caption[0][0] : undefined;
+
+let isYt = sourceUrl.includes("youtube.com");
+
+let embedUrl = sourceUrl;
+let iframeW = 600;
+if (format?.display_source) {
+	embedUrl = format.display_source;
+	if (format.block_width) {
+		iframeW = format.block_width;
+	}
+}
+
+---
+
+{isYt ? (
+	<YouTube id={sourceUrl} />
+) : (
+	<iframe 
+    title={caption}
+    width={iframeW}
+    height={iframeW * (format?.block_aspect_ratio ? format.block_aspect_ratio : 0.5625)}
+    src={embedUrl}
+	/>
+)}

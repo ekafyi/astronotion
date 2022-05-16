@@ -1,0 +1,17 @@
+---
+// @ts-ignore
+import XElement from "astro-xelement";
+import { sortNestedList } from "../api/lib";
+import RecursiveList from "./RecursiveList.astro";
+import type { AnGroupBlock } from "../api/lib";
+
+export interface Props {
+	data: AnGroupBlock["items"];
+}
+
+const { data } = Astro.props as Props;
+
+const topLevelItems = sortNestedList(data)[0].items;
+---
+
+<RecursiveList type={data[0].type} currentLevelItems={topLevelItems} allItems={data} />

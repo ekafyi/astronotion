@@ -1,0 +1,24 @@
+---
+import NotionImage from "./NotionImageBase.astro";
+import type { renderPicture } from "astro-imagetools/api";
+import type { ImageBlock } from "../api/lib/notion-types";
+import type { MakeRequired } from "../api/lib";
+
+// ⚠️ Vite/Astro breaks if types are declared separately,
+// eg. `type Foo = Parameters<typeof renderPicture>[0]`.
+// Write the type inside the Props interface instead.
+export interface Props {
+	data: MakeRequired<Partial<ImageBlock>, "properties">;
+	pictureProps?: Omit<Parameters<typeof renderPicture>[0], "src">;
+	containerMaxWidth?: string;
+	cols?: number;
+}
+
+const { data, pictureProps, containerMaxWidth, cols } = Astro.props;
+
+const { source, caption } = data.properties;
+const src = source[0][0];
+---
+
+<!-- // prettier-ignore -->
+<NotionImage src={src} caption={caption} pictureProps={pictureProps} isCover={false} containerMaxWidth={containerMaxWidth} cols={cols} />
