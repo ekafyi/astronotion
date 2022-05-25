@@ -1,5 +1,7 @@
 import type {
 	Block,
+	BlockMap,
+	PageBlock,
 	// Supported content blocks
 	TextBlock,
 	NumberedListBlock,
@@ -18,6 +20,7 @@ import type {
 	BookmarkBlock,
 	CalloutBlock,
 } from "notion-types";
+import { flattenBlocks } from "./flatten";
 
 /**
  * Block types supported by astronotion UI components.
@@ -61,3 +64,9 @@ const CONTENT_BLOCK_TYPES = [
 
 export const filterContentBlocks = (data: Block[]) =>
 	data.filter((item): item is AnContentBlock => CONTENT_BLOCK_TYPES.includes(item.type));
+
+export const filterChildBlocks = (data: BlockMap, parentUuid: string) => {
+	return flattenBlocks(data).filter(
+		(item): item is PageBlock => item.type === "page" && !item.content?.includes(parentUuid)
+	);
+};
