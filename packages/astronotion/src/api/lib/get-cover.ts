@@ -28,7 +28,7 @@ export const getCover = (
 			url: data.cover,
 			position,
 		};
-	} else if ("type" in data && data.type === "page" && !!data.format.page_cover) {
+	} else if ("type" in data && data.type === "page" && !!data.format?.page_cover) {
 		const position = data.format.page_cover_position ?? undefined;
 		return {
 			url: data.format.page_cover,

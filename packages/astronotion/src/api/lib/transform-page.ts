@@ -57,7 +57,7 @@ const getDownloadableUrlsFromPage = (data: ExtendedRecordMap) => {
 const transformChildPageBlock = (data: PageBlock, downloadableUrls?: string[]) => {
 	const { id, properties, format, created_time, last_edited_time } = data;
 	const title = flattenText(properties?.title || []);
-	const icon = format.page_icon;
+	const icon = format?.page_icon;
 
 	const cover = getCover(data);
 	if (cover && cover.url) {
@@ -132,7 +132,7 @@ export const transformEntryPage = (data: ExtendedRecordMap): AnEntryPage | undef
 
 	const { id, properties, format, created_time, last_edited_time } = pageBlock;
 	const title = flattenText(properties.title);
-	const icon = format.page_icon;
+	const icon = format?.page_icon;
 
 	const cover = getCover(pageBlock);
 	if (cover && cover.url) {
