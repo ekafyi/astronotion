@@ -1,6 +1,6 @@
 {
   "name": "astronotion",
-  "version": "0.0.6-alpha.54",
+  "version": "0.0.6-alpha.55",
   "type": "module",
   "types": "./dist/api/index.d.ts",
   "exports": {
