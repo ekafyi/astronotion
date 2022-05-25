@@ -1,4 +1,5 @@
 export * from "./check-page-type";
+export * from "./code-block-lang";
 export * from "./filter-blocks";
 export * from "./flatten";
 export * from "./get-astro-path";
