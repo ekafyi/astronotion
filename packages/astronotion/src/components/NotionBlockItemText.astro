@@ -8,6 +8,7 @@ export interface Props {
 }
 
 const { data } = Astro.props as Props;
+const attr = {};
 
 let TextElement = XElement.Fragment;
 if (data[1]?.length) {
@@ -27,6 +28,11 @@ if (data[1]?.length) {
 		case "c":
 			TextElement = XElement.code;
 			break;
+		case "a":
+			TextElement = XElement.a;
+			// @ts-ignore
+			attr.href = data[1][0][1];
+			break;
 		case "u":
 			TextElement = XElement.u;
 			break;
@@ -37,6 +43,6 @@ if (data[1]?.length) {
 }
 ---
 
-<TextElement>
+<TextElement {...attr}>
 	{data[0]}
 </TextElement>
