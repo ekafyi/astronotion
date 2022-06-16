@@ -1,6 +1,6 @@
 import type { Collection, Decoration, ExtendedRecordMap, PageBlock } from "notion-types";
 import { checkIfParentPage } from "./check-page-type";
-import { filterContentBlocks } from "./filter-blocks";
+import { filterContentBlocks, filterChildBlocks } from "./filter-blocks";
 import type { AnContentBlock } from "./filter-blocks";
 import { flattenBlocks, flattenText } from "./flatten";
 import { getCover } from "./get-cover";
@@ -57,7 +57,7 @@ const getDownloadableUrlsFromPage = (data: ExtendedRecordMap) => {
 const transformChildPageBlock = (data: PageBlock, downloadableUrls?: string[]) => {
 	const { id, properties, format, created_time, last_edited_time } = data;
 	const title = flattenText(properties?.title || []);
-	const icon = format.page_icon;
+	const icon = format?.page_icon;
 
 	const cover = getCover(data);
 	if (cover && cover.url) {
@@ -107,9 +107,10 @@ export const transformParentPage = (data: ExtendedRecordMap): AnParentPage | und
 		cover.url = transformImageUrl(cover.url, downloadableUrls);
 	}
 
-	const childPages = flattenBlocks(data.block)
-		.filter((item) => item.type === "page")
-		.map((item) => transformChildPageBlock(item as PageBlock, downloadableUrls));
+	const id = flattenBlocks(data.block)[0].id;
+	const childPages = filterChildBlocks(data.block, id).map((item) =>
+		transformChildPageBlock(item as PageBlock, downloadableUrls)
+	);
 
 	return {
 		pageType: "NOTION_PARENT",
@@ -132,7 +133,7 @@ export const transformEntryPage = (data: ExtendedRecordMap): AnEntryPage | undef
 
 	const { id, properties, format, created_time, last_edited_time } = pageBlock;
 	const title = flattenText(properties.title);
-	const icon = format.page_icon;
+	const icon = format?.page_icon;
 
 	const cover = getCover(pageBlock);
 	if (cover && cover.url) {

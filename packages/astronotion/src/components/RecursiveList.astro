@@ -1,7 +1,7 @@
 ---
 // @ts-ignore
 import XElement from "astro-xelement";
-import NotionBlockItemText from "./NotionBlockItemText.astro";
+import NotionTexts from "./NotionTexts.astro";
 import type { AnGroupBlock } from "../api/lib";
 import type { Decoration } from "../api/lib/notion-types"; // Don't import directly from "notion-types", does not work
 
@@ -30,22 +30,20 @@ const getListChildrenData = (childIds: string[], blocks: any[] = []) => {
 let ListElement = type === "numbered_list" ? XElement.ol : XElement.ul;
 ---
 
-<Fragment>
-	{properties && (
-		<span>{properties.title[0][0]}</span>
-	)}
-	<ListElement data-an-group-type={type}>
-		{currentLevelItems.map((item) => {
-			return (
-				<li>
-					{item.content ? (
-						// @ts-ignore
-						<Astro.self type={item.type} properties={item.properties} currentLevelItems={getListChildrenData(item.content, allItems)} allItems={allItems} />
-					) : (
-						item.properties?.title[0][0]
-					)}
-				</li>
-			)
-		})}
-	</ListElement>
-</Fragment>
+{properties && (
+	<span><NotionTexts data={properties?.title} /></span>
+)}
+<ListElement data-an-group-type={type}>
+	{currentLevelItems.map((item) => {
+		return (
+			<li>
+				{item.content ? (
+					// @ts-ignore
+					<Astro.self type={item.type} properties={item.properties} currentLevelItems={getListChildrenData(item.content, allItems)} allItems={allItems} />
+				) : (
+					<NotionTexts data={item.properties?.title || []} />
+				)}
+			</li>
+		)
+	})}
+</ListElement>
