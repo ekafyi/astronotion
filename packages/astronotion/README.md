@@ -7,7 +7,7 @@
 Make an [Astro](https://astro.build) site with content from [Notion](https://notion.so)
 
 - Add your Notion page ID(s), get conveniently massaged page content
-- (Optional) Render the page content with semantic, accessible, styleable UI components
+- Render the content with semantic, accessible, styleable components
 
 ## Quick(er) Start
 
